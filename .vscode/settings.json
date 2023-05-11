@@ -1,0 +1,7 @@
+{
+   "search.exclude": {
+      "out": true
+   },
+   "editor.rulers": [100],
+   "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

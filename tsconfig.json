@@ -1,0 +1,5 @@
+{
+   // This config file delegates building to the referenced subfolders.
+   "include": [],
+   "references": [{ "path": "./client-vscode" }, { "path": "./server" }]
+}

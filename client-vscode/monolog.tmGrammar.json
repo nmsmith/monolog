@@ -1,0 +1,28 @@
+{
+   "scopeName": "source.monolog",
+   "patterns": [{ "include": "#expression" }],
+   "repository": {
+      "expression": {
+         "patterns": [
+            { "include": "#letter" },
+            { "include": "#paren-expression" }
+         ]
+      },
+      "letter": {
+         "match": "\\bif\\b|\\bthen\\b|\\belse\\b",
+         "name": "keyword.control"
+      },
+      "paren-expression": {
+         "begin": "\\(",
+         "end": "\\)",
+         "beginCaptures": {
+            "0": { "name": "punctuation.paren.open" }
+         },
+         "endCaptures": {
+            "0": { "name": "punctuation.paren.close" }
+         },
+         "name": "expression.group",
+         "patterns": [{ "include": "#expression" }]
+      }
+   }
+}

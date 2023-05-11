@@ -1,0 +1,15 @@
+{
+   "version": "2.0.0",
+   "tasks": [
+      {
+         // This is copied from the VSCode extension template.
+         "label": "Execute 'npm watch'",
+         "type": "npm",
+         "script": "watch",
+         "problemMatcher": "$tsc-watch",
+         "isBackground": true,
+         "presentation": { "reveal": "never" },
+         "group": "build"
+      }
+   ]
+}

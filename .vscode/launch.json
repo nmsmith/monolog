@@ -1,0 +1,14 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+      {
+         // This is copied from the VSCode extension template.
+         "name": "Monolog client",
+         "type": "extensionHost",
+         "request": "launch",
+         "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+         "outFiles": ["${workspaceFolder}/client-vscode/out/**/*.js"],
+         "preLaunchTask": "Execute 'npm watch'"
+      }
+   ]
+}

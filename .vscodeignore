@@ -1,0 +1,9 @@
+.eslintrc.js
+.gitignore
+.prettierrc
+.vscode/**
+
+*/.vscode/**
+*/tsconfig.json
+*/tsconfig.tsbuildinfo
+*/src/**

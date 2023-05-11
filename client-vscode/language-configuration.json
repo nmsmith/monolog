@@ -1,0 +1,25 @@
+{
+   "brackets": [
+      ["(", ")"],
+      ["[", "]"],
+      ["{", "}"]
+   ],
+   "autoClosingPairs": [
+      { "open": "{", "close": "}" },
+      { "open": "[", "close": "]" },
+      { "open": "(", "close": ")" },
+      { "open": "\"", "close": "\"", "notIn": ["string"] },
+   ],
+   "surroundingPairs": [
+      ["(", ")"],
+      ["[", "]"],
+      ["{", "}"],
+      ["\"", "\""]
+    ],
+    "onEnterRules": [
+      {
+        "beforeText": "^\\s*if\\s*$|^\\s*then\\s*$|^\\s*else\\s*$",
+        "action": { "indent": "indent" }
+      }
+    ]
+}
