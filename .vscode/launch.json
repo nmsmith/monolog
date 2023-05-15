@@ -9,6 +9,14 @@
          "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
          "outFiles": ["${workspaceFolder}/client-vscode/out/**/*.js"],
          "preLaunchTask": "Execute 'npm watch'"
+      },
+      {
+         "name": "Attach to server",
+         "type": "node",
+         "request": "attach",
+         "port": 59599, // This should be set to the port printed in the client's Output channel (of the VSCode instance being debugged).
+         "restart": true,
+         "outFiles": ["${workspaceRoot}/server/out/**/*.js"]
       }
    ]
 }

@@ -1,108 +1,82 @@
 import {
    createConnection,
    TextDocuments,
-   Diagnostic,
-   DiagnosticSeverity,
    InitializeParams,
    CompletionItem,
    CompletionItemKind,
    TextDocumentPositionParams,
+   TextDocumentSyncKind,
 } from "vscode-languageserver/node"
+
+import { PublishDiagnosticsClientCapabilities } from "vscode-languageserver-protocol"
 
 import { TextDocument } from "vscode-languageserver-textdocument"
 
+import { lex } from "./lex"
+
 const connection = createConnection()
 
+// Client capabilities
+const client: {
+   publishDiagnostics?: PublishDiagnosticsClientCapabilities
+} = {}
+
 connection.onInitialize((params: InitializeParams) => {
+   // Keep track of relevant client capabilities.
+   client.publishDiagnostics = params.capabilities.textDocument?.publishDiagnostics
+   // Return server capabilities.
    return {
-      capabilities: {},
+      capabilities: {
+         textDocumentSync: TextDocumentSyncKind.Incremental,
+         //completionProvider: { resolveProvider: true },
+      },
    }
 })
 
 connection.onInitialized(() => {
-   connection.console.log("Connection has been initialized 🦄.")
+   console.log("Connection has been initialized 🦄.")
 })
 
 // ------------------------------ Document handling --------------------------------
 
 const documents = new TextDocuments(TextDocument)
-// Make the text document manager listen on the connection
-// for open, change and close text document events
+// Listen for text document events.
 documents.listen(connection)
-// Called when the document is opened, and every time it is modifed.
-documents.onDidChangeContent((change) => {
-   validateTextDocument(change.document)
+// Called when the document is opened, and every time it is modified.
+documents.onDidChangeContent(({ document }) => {
+   let { ast, diagnostics } = lex(document.getText())
+   connection.sendDiagnostics({ uri: document.uri, diagnostics })
 })
-
-async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-   // The validator creates diagnostics for all uppercase words length 2 and more
-   const text = textDocument.getText()
-   const pattern = /\b[A-Z]{2,}\b/g
-   let m: RegExpExecArray | null
-
-   const diagnostics: Diagnostic[] = []
-   while ((m = pattern.exec(text))) {
-      const diagnostic: Diagnostic = {
-         severity: DiagnosticSeverity.Warning,
-         range: {
-            start: textDocument.positionAt(m.index),
-            end: textDocument.positionAt(m.index + m[0].length),
-         },
-         message: `${m[0]} is all uppercase.`,
-         source: "ex",
-      }
-      diagnostic.relatedInformation = [
-         {
-            location: {
-               uri: textDocument.uri,
-               range: Object.assign({}, diagnostic.range),
-            },
-            message: "Spelling matters",
-         },
-         {
-            location: {
-               uri: textDocument.uri,
-               range: Object.assign({}, diagnostic.range),
-            },
-            message: "Particularly for names",
-         },
-      ]
-      diagnostics.push(diagnostic)
-   }
-
-   // Send the computed diagnostics to VSCode.
-   connection.sendDiagnostics({ uri: textDocument.uri, diagnostics })
-}
 
 // ------------------------------ Example functionality ---------------------------------
 
 // Provide a list of completion items at the given position.
-connection.onCompletion((pos: TextDocumentPositionParams): CompletionItem[] => {
-   return [
-      {
-         label: "TypeScript",
-         kind: CompletionItemKind.Text,
-         data: 1,
-      },
-      {
-         label: "JavaScript",
-         kind: CompletionItemKind.Text,
-         data: 2,
-      },
-   ]
-})
+// connection.onCompletion((pos: TextDocumentPositionParams): CompletionItem[] => {
+//    return [
+//       {
+//          label: "TypeScript",
+//          kind: CompletionItemKind.Text,
+//          data: 1,
+//       },
+//       {
+//          label: "JavaScript",
+//          kind: CompletionItemKind.Text,
+//          data: 2,
+//       },
+//    ]
+// })
 
-// Provide additional information for the selected completion item.
-connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-   if (item.data === 1) {
-      item.detail = "TypeScript details"
-      item.documentation = "TypeScript documentation"
-   } else if (item.data === 2) {
-      item.detail = "JavaScript details"
-      item.documentation = "JavaScript documentation"
-   }
-   return item
-})
+// // Provide additional information for the selected completion item.
+// connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
+//    if (item.data === 1) {
+//       item.detail = "TypeScript details"
+//       item.documentation = "TypeScript documentation"
+//    } else if (item.data === 2) {
+//       item.detail = "JavaScript details"
+//       item.documentation = "JavaScript documentation"
+//    }
+//    return item
+// })
 
 // Begin listening for messages.
 connection.listen()
